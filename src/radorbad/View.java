@@ -1,14 +1,13 @@
 package radorbad;
 
-import java.awt.FlowLayout;
-
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 public class View extends JFrame {
 
-	private final static int WIDTH=640;
-	private final static int HEIGHT=480;
+	public final static int WIDTH=640;
+	public final static int HEIGHT=480;
+	public final static int OFFSET=10;
 	
 	public View(ViewModel vm, Model m){
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -17,7 +16,7 @@ public class View extends JFrame {
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		
-		this.setLayout(new FlowLayout());
+		this.setLayout(null);
 		for(JComponent comp : ViewModel.components){
 			this.add(comp);
 		}
