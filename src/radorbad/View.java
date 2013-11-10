@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 
 public class View extends JFrame {
 
-	public final static int WIDTH=640;
+	public final static int WIDTH=800;
 	public final static int HEIGHT=480;
 	public final static int OFFSET=10;
 	

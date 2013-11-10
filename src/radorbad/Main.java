@@ -11,7 +11,6 @@ public class Main{
 		
 		View v = new View(vm, m);
 		File f = new File(".git");
-		System.out.println(f.getAbsolutePath() + " " + f.exists());
 		IVCSSnippetSource ss = new GitSnippetSource(new File(".git"));
 		ViewModel.addSnippet(ss);
 	}

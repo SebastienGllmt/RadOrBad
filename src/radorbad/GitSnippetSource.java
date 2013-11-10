@@ -58,7 +58,7 @@ public class GitSnippetSource implements IVCSSnippetSource {
 			if (extensionIndex != -1)
 			{
 				String extension = path.substring(extensionIndex);
-				List<String> extensions = new ArrayList();
+				List<String> extensions = new ArrayList<>();
 				extensions.add(".java");
 				
 				if (extensions.contains(extension))
