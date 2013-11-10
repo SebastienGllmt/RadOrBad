@@ -2,34 +2,49 @@ package radorbad;
 
 import java.util.HashMap;
 
-
 public class Model {
-	
+
+	private static class Rating {
+		public Rating(int numUpvotes, int numDownVotes) {
+			this.numUpVotes = numUpvotes;
+			this.numDownVotes = numDownVotes;
+		}
+
+		public int numUpVotes;
+		public int numDownVotes;
+	}
+
 	private IVCSSnippetSource snippetSource;
-	private HashMap<Long, Integer> scores;
+	private HashMap<Long, Rating> ratings;
 	private int historyDepth;
-	
+
 	public Model(IVCSSnippetSource snippetSource, int historyDepth) {
 		this.snippetSource = snippetSource;
-		scores = new HashMap<Long, Integer>();
+		ratings = new HashMap<>();
 		this.historyDepth = historyDepth;
 	}
-	
-	public SnippetData getSnippet() {
-		SnippetData snippet = snippetSource.getSnippet(historyDepth); 
-		if (!scores.containsKey(snippet.hash)) {
-			scores.put(snippet.hash, 0);
+
+	public SnippetData getNextSnippet() {
+		SnippetData snippet = snippetSource.getSnippet(historyDepth);
+		if (!ratings.containsKey(snippet.hash)) {
+			ratings.put(snippet.hash, new Rating(0, 0));
 		}
 		return snippet;
 	}
-	
-	public void upVote(long id)
-	{
-		scores.put(id, scores.get(id) + 1);
+
+	public int getNumUpVotes(long id) {
+		return ratings.get(id).numUpVotes;
 	}
-	
-	public void downVote(long id)
-	{
-		scores.put(id, scores.get(id) - 1);
+
+	public int getNumDownVotes(long id) {
+		return ratings.get(id).numDownVotes;
+	}
+
+	public void upVote(long id) {
+		ratings.get(id).numUpVotes++;
+	}
+
+	public void downVote(long id) {
+		ratings.get(id).numDownVotes++;
 	}
 }

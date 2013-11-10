@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.text.PlainDocument;
 
@@ -23,22 +24,36 @@ public class ViewModel {
 
 	private JEditorPane codeEditor;
 	private Model model;
-	ArrayList<JComponent> components;
+	private ArrayList<JComponent> components;
 
 	long currentSnippetID = 0;
 
+	private static final String DOWNVOTE = "Bad";
+	private static final String UPVOTE = "Rad";
+
+	private String lastVote;
+
 	private void upVote() {
+		lastVote = UPVOTE;
 		model.upVote(currentSnippetID);
 	}
 
 	private void downVote() {
+		lastVote = DOWNVOTE;
 		model.downVote(currentSnippetID);
 	}
 
 	private void nextSnippet() {
+		if (currentSnippetID != 0) {
+			final String FORMAT = "Rads: %d\nBads: %d\n\nYou voted: %s\n";
+			int numUpVotes = model.getNumUpVotes(currentSnippetID);
+			int numDownVotes = model.getNumDownVotes(currentSnippetID);
+			String message = String.format(FORMAT, numUpVotes, numDownVotes, lastVote);
+			JOptionPane.showMessageDialog(null, message, "Results", JOptionPane.PLAIN_MESSAGE);
+		}
 		SnippetData snippet;
 		do {
-			snippet = model.getSnippet();
+			snippet = model.getNextSnippet();
 		} while (snippet.hash == currentSnippetID && snippet.hash != 0);
 
 		codeEditor.setText(snippet.contents);
