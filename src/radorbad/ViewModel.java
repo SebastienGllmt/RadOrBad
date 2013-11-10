@@ -72,7 +72,7 @@ public class ViewModel {
 		srcPane.setLocation(5, 5);
 		srcPane.setSize(CODE_WIDTH, CODE_HEIGHT);
 		components.add(srcPane);
-		//codeEditor.setContentType("text/java");
+		codeEditor.setContentType("text/java");
 
 		JButton radButton = new JButton("Rad");
 		radButton.addActionListener(new ActionListener() {
