@@ -15,7 +15,6 @@ import jsyntaxpane.DefaultSyntaxKit;
 
 public class ViewModel {
 
-	private static JTextField code;
 	private static final int CODE_WIDTH = View.WIDTH - 2 * View.OFFSET;
 	private static final int CODE_HEIGHT = View.HEIGHT / 2;
 
@@ -23,23 +22,17 @@ public class ViewModel {
 	private static final int BUTTON_HEIGHT = 50;
 	private static final int BUTTON_XOFFSET = 200;
 	private static final int BUTTON_YOFFSET = 100;
-
+	private static JEditorPane codeEditor;
+	
 	public static final ArrayList<JComponent> components = new ArrayList<JComponent>() {
 		{
-			code = new JTextField("Bob");
-			code.setEditable(false);
-			code.setBackground(new Color(255, 255, 255));
-			code.setLocation(View.OFFSET, View.OFFSET);
-			code.setSize(CODE_WIDTH, CODE_HEIGHT);
-			//this.add(code);
-			
 			DefaultSyntaxKit.initKit();
-			final JEditorPane codeEditor = new JEditorPane();
+			codeEditor = new JEditorPane();
 			JScrollPane srcPane = new JScrollPane(codeEditor);
 			srcPane.setLocation(5, 5);
 			srcPane.setSize(200, 200);
 			this.add(srcPane);
-			codeEditor.setContentType("text/java");
+			//codeEditor.setContentType("text/java");
 			codeEditor.setText("public static void main(String[] args) {\n}");
 
 
@@ -65,12 +58,12 @@ public class ViewModel {
 		}
 	};
 
-	public boolean addSnippet(IVCSSnippetSource snippetSource) {
-		String text = snippetSource.getSnippet(1);
+	public static boolean addSnippet(IVCSSnippetSource snippetSource) {
+		String text = snippetSource.getSnippet(5);
 		if (text == null) {
 			return false;
 		} else {
-			code.setText(text);
+			codeEditor.setText(text);
 			return true;
 		}
 	}
