@@ -6,12 +6,12 @@ import java.io.IOException;
 public class Main{
 
 	public static void main(String[] args) throws IOException{
-		Model m = new Model();
-		ViewModel vm = new ViewModel();
+		IVCSSnippetSource snippetSource = new GitSnippetSource(new File(args[0]));
 		
-		View v = new View(vm, m);
-		File f = new File(".git");
-		IVCSSnippetSource ss = new GitSnippetSource(new File(".git"));
-		ViewModel.addSnippet(ss);
+		Model model = new Model(snippetSource);
+		
+		ViewModel viewModel = new ViewModel(model);
+		
+		new View(viewModel);
 	}
 }
