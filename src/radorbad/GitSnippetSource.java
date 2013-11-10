@@ -1,57 +1,91 @@
 package radorbad;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 
-import edu.nyu.cs.javagit.api.DotGit;
-import edu.nyu.cs.javagit.api.commands.GitLogResponse;
-import edu.nyu.cs.javagit.api.commands.GitLogResponse.CommitFile;
+import org.eclipse.jgit.api.DiffCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 public class GitSnippetSource implements IVCSSnippetSource {
 
-	private File repositoryDirectory = null;
+	Repository repository;
 	
-	public GitSnippetSource(File repositoryDirectory)
+	public GitSnippetSource(File repositoryDirectory) throws IOException
 	{
-		this.repositoryDirectory = repositoryDirectory;
+		RepositoryBuilder builder = new RepositoryBuilder();
+		repository = builder.setGitDir(repositoryDirectory).readEnvironment().findGitDir().build();
+	}
+	
+	private static String Replicate(String s, int n)
+	{
+		return new String(new char[n]).replace("\0", s);
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	private static int Count(Iterable iterable)
+	{
+		int count = 0;
+		for (Iterator it = iterable.iterator(); it.hasNext(); it.next())
+		{
+			count++;
+		}
+		return count;
 	}
 	
 	@Override
 	public String getSnippet(int backlogLength) {
-		DotGit dotGit = DotGit.getInstance(this.repositoryDirectory);
-		
-		List<GitLogResponse.Commit> commitLog = null;
 		try {
-			commitLog = dotGit.getLog();
-		} catch (Exception e) {
-			return null;
-		}		
-		
-		int logLength = commitLog.size();
-		int numBacklogEntires = (int)Math.max(logLength - backlogLength, 0);
-		List<GitLogResponse.Commit> candidateCommits = commitLog.subList(logLength - numBacklogEntires, logLength);
-				
-		int chosenCommitIndex = (int)(Math.random() * Integer.MAX_VALUE) % candidateCommits.size();
-		
-		GitLogResponse.Commit chosenCommit = candidateCommits.get(chosenCommitIndex);
-		
-		List<CommitFile> commitFiles = chosenCommit.getFiles();
-		if (commitFiles != null)
-		{
-			for (CommitFile file : commitFiles)
-			{
-				System.out.printf("%s: Added %d, Deleted %d\n", file.getName(), file.getLinesAdded(), file.getLinesDeleted());
-			}
-		}
-		else
-		{
-			System.out.println("No files in commit.");
-		}
+			Git git = new Git(repository);
+			int clampedBacklogLength = (int)Math.min(backlogLength, Count(git.log().call()));
+			DiffCommand diff = git.diff()
+					.setOldTree(getTreeIterator(Constants.HEAD + Replicate("^", clampedBacklogLength)))
+					.setNewTree(getTreeIterator(Constants.HEAD + "^"));
+			List<DiffEntry> entries = diff.call();
+			
+			int chosenEntryIndex = (int)(Math.random() * Integer.MAX_VALUE) % entries.size();
+			DiffEntry chosenEntry = entries.get(chosenEntryIndex);
 
-//		List<CommitFile> candidateCommitFiles = chosenCommit.getFiles();
-//		int chosenFileIndex = (int)(Math.random() * Integer.MAX_VALUE) % candidateCommitFiles.size();
-//		CommitFile chosenFile = candidateCommitFiles.get(chosenFileIndex);
-//				
-		return null;
+			OutputStream out = new ByteArrayOutputStream();
+			DiffFormatter diffFormater = new DiffFormatter(out);
+			diffFormater.setRepository(repository);
+			diffFormater.format(chosenEntry);
+			
+			return out.toString();
+		}
+		catch(GitAPIException | IOException e)
+		{
+			return null;
+		}
+	}
+	
+	private AbstractTreeIterator getTreeIterator(String name)
+			throws IOException {
+		final ObjectId id = repository.resolve(name);
+		if (id == null)
+			throw new IllegalArgumentException(name);
+		final CanonicalTreeParser p = new CanonicalTreeParser();
+		final ObjectReader or = repository.newObjectReader();
+		try {
+			p.reset(or, new RevWalk(repository).parseTree(id));
+			return p;
+		} finally {
+			or.release();
+		}
 	}
 }
