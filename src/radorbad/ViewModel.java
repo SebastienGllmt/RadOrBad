@@ -39,7 +39,7 @@ public class ViewModel {
 		SnippetData snippet;
 		do {
 			snippet = model.getSnippet();
-		} while (snippet.hash == currentSnippetID);
+		} while (snippet.hash == currentSnippetID && snippet.hash != 0);
 
 		codeEditor.setText(snippet.contents);
 		currentSnippetID = snippet.hash;
