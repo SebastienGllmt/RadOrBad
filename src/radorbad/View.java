@@ -10,15 +10,16 @@ public class View extends JFrame {
 	public final static int OFFSET = 10;
 	
 	public View(ViewModel viewModel){
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(WIDTH, HEIGHT);
-		this.setVisible(true);
-		this.setResizable(false);
-		this.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Rad or Bad");
+		setSize(WIDTH, HEIGHT);
+		setVisible(true);
+		setResizable(false);
+		setLocationRelativeTo(null);
 		
-		this.setLayout(null);
+		setLayout(null);
 		for(JComponent comp : viewModel.getComponents()){
-			this.add(comp);
+			add(comp);
 		}	
 	}
 }
