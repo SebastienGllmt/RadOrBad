@@ -60,7 +60,7 @@ public class ViewModel {
 	};
 
 	public static boolean addSnippet(IVCSSnippetSource snippetSource) {
-		String text = snippetSource.getSnippet(5);
+		String text = snippetSource.getSnippet(5).contents;
 		if (text == null) {
 			return false;
 		} else {
