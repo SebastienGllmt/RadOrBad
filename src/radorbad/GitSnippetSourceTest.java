@@ -12,7 +12,7 @@ public class GitSnippetSourceTest {
 	@Test
 	public void testGetSnippet() throws IOException {
 		GitSnippetSource snippetSource = new GitSnippetSource(new File(".git"));
-		String s = snippetSource.getSnippet(5);
+		String s = snippetSource.getSnippet(5).contents;
 		System.out.println("Snippet: " + s);
 		assertNotNull(s);
 	}

@@ -71,7 +71,7 @@ public class GitSnippetSource implements IVCSSnippetSource {
 	}
 	
 	@Override
-	public String getSnippet(int backlogLength) {
+	public SnippetData getSnippet(int backlogLength) {
 		try {
 			Git git = new Git(repository);
 			int clampedBacklogLength = (int)Math.min(backlogLength + 1, Count(git.log().call()));
@@ -82,7 +82,7 @@ public class GitSnippetSource implements IVCSSnippetSource {
 			
 			if (entries.size() == 0)
 			{
-				return "No commits found.";
+				return new SnippetData("No commits found.", 0);
 			}
 			
 			int chosenEntryIndex = (int)(Math.random() * Integer.MAX_VALUE) % entries.size();
@@ -93,7 +93,7 @@ public class GitSnippetSource implements IVCSSnippetSource {
 			diffFormater.setRepository(repository);
 			diffFormater.format(chosenEntry);
 			
-			return out.toString();
+			return new SnippetData(out.toString(), chosenEntry.getNewId().hashCode());
 		}
 		catch(GitAPIException | IOException e)
 		{
