@@ -10,4 +10,4 @@ Rad or Bad pulls diffs from a git repository and lets you vote on whether those 
 Usage
 =====
 
-radorbad.jar <path/to/.git> <history depth>
+radorbad.jar &lt;path/to/.git&gt; &lt;history depth&gt;
