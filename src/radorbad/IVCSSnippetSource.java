@@ -1,5 +1,5 @@
 package radorbad;
 
 public interface IVCSSnippetSource {
-	public String getSnippet();
+	public String getSnippet(int backlogLength);
 }
